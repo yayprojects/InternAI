@@ -1,0 +1,5 @@
+{
+  "name": "InternAI: AI Internship Recommender",
+  "description": "An AI-powered recommender to help college students find their perfect internship based on their skills and interests. It uses a smart matching algorithm to filter and display the most relevant opportunities.",
+  "requestFramePermissions": []
+}
