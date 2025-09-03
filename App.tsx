@@ -3,7 +3,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { GoogleGenAI, Type } from "@google/genai";
 
 // --- AI INITIALIZATION ---
-const ai = new GoogleGenAI({apiKey: process.env.API_KEY});
+const ai = new GoogleGenAI({apiKey: "AIzaSyAE0p42ZBK6Z7bN52HXW3UNkAhS03aHnGE"});
 
 // --- TYPE DEFINITIONS ---
 interface Internship {
