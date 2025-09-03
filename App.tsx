@@ -1,14 +1,16 @@
-
+// internAI-main/App.tsx
 import React, { useState, useEffect, useCallback } from 'react';
 import { GoogleGenAI, Type } from "@google/genai";
 
-// Fix: Resolved TypeScript error and aligned with Gemini API guidelines by using process.env.API_KEY.
-const API_KEY = process.env.API_KEY;
+// Fix: Use process.env.GEMINI_API_KEY as defined in vite.config.ts for consistency.
+// This will be replaced by Vite during build.
+const API_KEY = process.env.GEMINI_API_KEY; // Changed from process.env.API_KEY
+
 if (!API_KEY) {
-  throw new Error("API_KEY environment variable not set. Please ensure it is configured in the environment.");
+  throw new Error("GEMINI_API_KEY environment variable not set. Please ensure it is configured in the environment.");
 }
 const ai = new GoogleGenAI({ apiKey: API_KEY });
-
+// ... rest of your App.tsx code
 // --- TYPE DEFINITIONS ---
 interface Internship {
   id: number;
