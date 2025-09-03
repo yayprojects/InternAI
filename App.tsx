@@ -2,8 +2,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { GoogleGenAI, Type } from "@google/genai";
 
-// --- AI INITIALIZATION ---
-const ai = new GoogleGenAI({apiKey: "AIzaSyAE0p42ZBK6Z7bN52HXW3UNkAhS03aHnGE"});
+// Fix: Resolved TypeScript error and aligned with Gemini API guidelines by using process.env.API_KEY.
+const API_KEY = process.env.API_KEY;
+if (!API_KEY) {
+  throw new Error("API_KEY environment variable not set. Please ensure it is configured in the environment.");
+}
+const ai = new GoogleGenAI({ apiKey: API_KEY });
 
 // --- TYPE DEFINITIONS ---
 interface Internship {
@@ -126,7 +130,6 @@ const LocationIcon: React.FC<{ className?: string }> = ({ className }) => ( <svg
 const BookmarkIcon: React.FC<{ className?: string; isSaved: boolean; }> = ({ className, isSaved }) => ( <svg xmlns="http://www.w3.org/2000/svg" className={className} fill={isSaved ? "currentColor" : "none"} viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" /></svg>);
 const SparklesIcon: React.FC<{ className?: string }> = ({ className }) => (<svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.293 2.293a1 1 0 010 1.414L10 12l-2.293 2.293a1 1 0 01-1.414 0L4 12m16 8l-2.293-2.293a1 1 0 00-1.414 0L14 16l-2.293-2.293a1 1 0 00-1.414 0L8 16m11-6a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1h2a1 1 0 001-1v-2z" /></svg>);
 const UsersIcon: React.FC<{ className?: string }> = ({ className }) => ( <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.653-.124-1.282-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.653.124-1.282.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>);
-
 
 // --- REUSABLE COMPONENTS ---
 const SkillTag: React.FC<{ skill: string }> = ({ skill }) => ( <span className="inline-block bg-indigo-100 text-indigo-700 text-xs font-semibold mr-2 mb-2 px-2.5 py-1 rounded-full">{skill}</span>);
@@ -293,8 +296,12 @@ export default function App() {
   const [feedInternships, setFeedInternships] = useState<InternshipWithReason[]>([]);
   const [feedLoading, setFeedLoading] = useState(false);
   const [feedError, setFeedError] = useState<string | null>(null);
+  
+  // Fix: Removed useEffect that displayed a UI error about a missing API key, which violates usage guidelines.
+  // The app-level check at initialization is sufficient for developer feedback.
 
   useEffect(() => {
+    // User Session Initialization
     const loggedInUserEmail = localStorage.getItem('internai_session');
     if (loggedInUserEmail) {
         const users = JSON.parse(localStorage.getItem('internai_users') || '{}');
@@ -354,6 +361,7 @@ export default function App() {
       setError("Please tell us what you're looking for in an internship.");
       return;
     }
+    // Fix: Removed redundant API key check to comply with guidelines.
     setSubmitted(true);
     setLoading(true);
     setError(null);
@@ -402,13 +410,14 @@ export default function App() {
 
     } catch (err) {
       console.error("API Error:", err);
-      setError("Sorry, we couldn't get your AI recommendations. Please check your connection and try again.");
+      setError("Sorry, we couldn't get your AI recommendations. The service might be temporarily unavailable. Please try again later.");
     } finally {
       setLoading(false);
     }
   };
 
   const getFeedRecommendations = useCallback(async () => {
+    // Fix: Removed redundant API key check.
     if (!currentUser) return;
     
     setFeedLoading(true);
@@ -470,7 +479,7 @@ export default function App() {
 
     } catch (err) {
         console.error("Feed API Error:", err);
-        setFeedError("Could not generate your personalized feed. Please try again later.");
+        setFeedError("Could not generate your personalized feed. The service might be temporarily unavailable. Please try again later.");
     } finally {
         setFeedLoading(false);
     }
@@ -498,7 +507,7 @@ export default function App() {
   return (
     <div className="bg-slate-50 min-h-screen font-sans">
         {showAuthModal && <AuthModal mode={showAuthModal} onClose={() => setShowAuthModal(null)} onAuthSuccess={handleAuthSuccess} />}
-        
+
         <header className="bg-white shadow-sm sticky top-0 z-20">
             <div className="container mx-auto px-4 py-3 flex justify-between items-center">
                  <div className="text-2xl font-bold text-gray-800 cursor-pointer" onClick={() => setView(currentUser ? 'feed' : 'home')}>
@@ -539,6 +548,7 @@ export default function App() {
                   <textarea id="prompt" rows={3} value={userPrompt} onChange={(e) => setUserPrompt(e.target.value)} placeholder="e.g., I'm a computer science student with experience in React and Node.js, looking for a remote role in web development..." className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 transition" aria-describedby="prompt-help"/>
                   <p id="prompt-help" className="text-xs text-gray-500 mt-1">Be descriptive! Mention your skills, interests, year of study, and what you want to learn.</p>
                 </div>
+                {/* Fix: Removed redundant API key check from disabled logic. */}
                 <button type="submit" disabled={loading} className="w-full mt-4 bg-indigo-600 text-white font-bold py-3 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 flex items-center justify-center transition disabled:bg-indigo-300 disabled:cursor-not-allowed">
                   {loading ? ( <> <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Asking the AI...</> ) : ( <> <SearchIcon className="h-5 w-5 mr-2" /> Find My Internship </> )}
                 </button>
