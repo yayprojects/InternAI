@@ -9,7 +9,7 @@ export default defineConfig(({ mode }) => {
       // --- CHANGE THIS LINE ---
       // Replace 'internAI' with the EXACT name of your GitHub repository.
       // Example: If your repo is named 'my-intern-app', change to '/my-intern-app/'
-      base: '/internAI/', // <--- Make sure this matches your GitHub repo name exactly!
+      base: '/InternAI/', // <--- Make sure this matches your GitHub repo name exactly!
 
       define: {
         'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
